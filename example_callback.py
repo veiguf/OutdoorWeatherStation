@@ -10,67 +10,79 @@ from tinkerforge.bricklet_outdoor_weather import BrickletOutdoorWeather
 
 from datetime import datetime
 import csv
+import os.path
 
-file = open("OutdoorWeatherStationData.csv", "w", encoding="utf-8")
-with file:
-    writer = csv.writer(file)
-    writer.writerow(["DateTime", "Temperature [°C]", "Humidity [%RH]", "Wind Speed [m/s]", "Gust Speed [m/s]", "Rain [mm]", "Wind Direction"])
+data_file = "OutdoorWeatherStationData.csv"
+
+if os.path.isfile(data_file) == False:
+    file = open(data_file, "w", encoding="utf-8")
+    with file:
+        writer = csv.writer(file)
+        writer.writerow(["Date and Time", "Temperature [°C]", "Humidity [%RH]", "Wind Speed [m/s]", "Gust Speed [m/s]", "Wind Direction", "Rain [mm]", "Battery Status"])
 
 # Callback function for station data callback
 def cb_station_data(identifier, temperature, humidity, wind_speed, gust_speed, rain,
                     wind_direction, battery_low):
+
     now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    print("Current Time:", current_time)
-    print("Identifier (Station): " + str(identifier))
-    print("Temperature (Station): " + str(temperature/10.0) + " °C")
-    print("Humidity (Station): " + str(humidity) + " %RH")
-    print("Wind Speed (Station): " + str(wind_speed/10.0) + " m/s")
-    print("Gust Speed (Station): " + str(gust_speed/10.0) + " m/s")
-    print("Rain (Station): " + str(rain/10.0) + " mm")
 
     if wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_N:
-        print("Wind Direction (Station): N")
+        wind_direction_str = "N"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_NNE:
-        print("Wind Direction (Station): NNE")
+        wind_direction_str = "NNE"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_NE:
-        print("Wind Direction (Station): NE")
+        wind_direction_str = "NE"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_ENE:
-        print("Wind Direction (Station): ENE")
+        wind_direction_str = "ENE"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_E:
-        print("Wind Direction (Station): E")
+        wind_direction_str = "E"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_ESE:
-        print("Wind Direction (Station): ESE")
+        wind_direction_str = "ESE"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_SE:
-        print("Wind Direction (Station): SE")
+        wind_direction_str = "SE"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_SSE:
-        print("Wind Direction (Station): SSE")
+        wind_direction_str = "SSE"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_S:
-        print("Wind Direction (Station): S")
+        wind_direction_str = "S"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_SSW:
-        print("Wind Direction (Station): SSW")
+        wind_direction_str = "SSW"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_SW:
-        print("Wind Direction (Station): SW")
+        wind_direction_str = "SW"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_WSW:
-        print("Wind Direction (Station): WSW")
+        wind_direction_str = "WSW"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_W:
-        print("Wind Direction (Station): W")
+        wind_direction_str = "W"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_WNW:
-        print("Wind Direction (Station): WNW")
+        wind_direction_str = "WNW"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_NW:
-        print("Wind Direction (Station): NW")
+        wind_direction_str = "NW"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_NNW:
-        print("Wind Direction (Station): NNW")
+        wind_direction_str = "NNW"
     elif wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_ERROR:
-        print("Wind Direction (Station): Error")
+        wind_direction_str = "Error"
 
-    print("Battery Low (Station): " + str(battery_low))
-    print("")
+    if battery_low == False:
+        battery_status = "OK"
+    elif battery_low == True:
+        battery_status = "LOW"
+    else:
+        battery_status = "???"
+
+    # print("Current Date and Time:", now)
+    # print("Identifier (Station): " + str(identifier))
+    # print("Temperature (Station): " + str(temperature/10.0) + " °C")
+    # print("Humidity (Station): " + str(humidity) + " %RH")
+    # print("Wind Speed (Station): " + str(wind_speed/10.0) + " m/s")
+    # print("Gust Speed (Station): " + str(gust_speed/10.0) + " m/s")
+    # print("Rain (Station): " + str(rain/10.0) + " mm")
+    # print("Wind Direction (Station): " + wind_direction_str)
+    # print("Battery Status (Station): " + battery_status)
+    # print("")
 
     file = open("OutdoorWeatherStationData.csv", "a", encoding="utf-8")
     with file:
         writer = csv.writer(file)
-        writer.writerow([current_time, temperature/10.0, humidity, wind_speed/10.0, gust_speed/10.0, rain/10.0, wind_direction])
+        writer.writerow([now, temperature/10.0, humidity, wind_speed/10.0, gust_speed/10.0, wind_direction_str, rain/10.0, battery_status])
 
 # Callback function for sensor data callback
 def cb_sensor_data(identifier, temperature, humidity):
