@@ -12,7 +12,7 @@ from datetime import datetime
 import csv
 import os.path
 
-data_file = "OutdoorWeatherStationData.csv"
+data_file = "/home/veit/Dokumente/OutdoorWeatherStation/SensorData.csv"
 
 if os.path.isfile(data_file) == False:
     file = open(data_file, "w", encoding="utf-8")
@@ -79,7 +79,7 @@ def cb_station_data(identifier, temperature, humidity, wind_speed, gust_speed, r
     # print("Battery Status (Station): " + battery_status)
     # print("")
 
-    file = open("OutdoorWeatherStationData.csv", "a", encoding="utf-8")
+    file = open(data_file, "a", encoding="utf-8")
     with file:
         writer = csv.writer(file)
         writer.writerow([now, temperature/10.0, humidity, wind_speed/10.0, gust_speed/10.0, wind_direction_str, rain/10.0, battery_status])
