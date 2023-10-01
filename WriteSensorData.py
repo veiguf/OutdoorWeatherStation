@@ -8,11 +8,16 @@ UID = "22jj" # Change XYZ to the UID of your Outdoor Weather Bricklet
 from tinkerforge.ip_connection import IPConnection
 from tinkerforge.bricklet_outdoor_weather import BrickletOutdoorWeather
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import csv
 import os.path
+from git import Repo
 
 data_file = "/home/veit/Dokumente/OutdoorWeatherStation/SensorData.csv"
+
+with open("save_time.txt", 'w') as file:
+    file.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+
 
 if os.path.isfile(data_file) == False:
     file = open(data_file, "w", encoding="utf-8")
@@ -25,6 +30,9 @@ def cb_station_data(identifier, temperature, humidity, wind_speed, gust_speed, r
                     wind_direction, battery_low):
 
     now = datetime.now()
+    save_delta = timedelta(hours=6)
+    with open("save_time.txt", 'r') as file:
+        save_time = datetime.strptime(file.read(), "%Y-%m-%d %H:%M:%S.%f")
 
     if wind_direction == BrickletOutdoorWeather.WIND_DIRECTION_N:
         wind_direction_str = "N"
@@ -84,6 +92,15 @@ def cb_station_data(identifier, temperature, humidity, wind_speed, gust_speed, r
         writer = csv.writer(file)
         writer.writerow([now, temperature/10.0, humidity, wind_speed/10.0, gust_speed/10.0, wind_direction_str, rain/10.0, battery_status])
 
+    if now-save_time >= save_delta:
+        repo = Repo('/home/veit/Dokumente/OutdoorWeatherStation')  # if repo is CWD just do '.'
+        repo.index.add(['SensorData.csv'])
+        repo.index.commit(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+        origin = repo.remote('origin')
+        origin.push()
+        with open("save_time.txt", 'w') as file:
+            file.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+
 # Callback function for sensor data callback
 def cb_sensor_data(identifier, temperature, humidity):
     print("Identifier (Sensor): " + str(identifier))
@@ -102,7 +119,8 @@ if __name__ == "__main__":
     ow.set_station_callback_configuration(True)
 
     # Enable sensor data callbacks
-    ow.set_sensor_callback_configuration(True)
+    ow.set_sensor_callback_configuration(False)
+    
 
     # Register station data callback to function cb_station_data
     ow.register_callback(ow.CALLBACK_STATION_DATA, cb_station_data)
