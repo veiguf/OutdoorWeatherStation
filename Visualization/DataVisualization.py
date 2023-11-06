@@ -6,6 +6,7 @@ import csv
 from datetime import datetime, timedelta
 import numpy as np
 import matplotlib.pyplot as plt
+from git import Repo
 
 data_file = "/home/veit/Dokumente/OutdoorWeatherStation/SensorData.csv"
 
@@ -17,7 +18,7 @@ with open(data_file) as csvfile:
         data.append(row)
 
 now = datetime.now()
-now = datetime(2023,10,31,23,59,59,999999)
+# now = datetime(2023,10,31,23,59,59,999999)
 
 array = np.array(data)
 
@@ -89,3 +90,9 @@ plt.ylabel("Relative Frequency")
 plt.title(now.strftime("%B %Y"))
 plt.tight_layout()
 plt.savefig(now.strftime("%Y-%m")+"_GustSpeed.svg")
+
+repo = Repo('/home/veit/Dokumente/OutdoorWeatherStation')  # if repo is CWD just do '.'
+repo.index.add(['Visualization'])
+repo.index.commit(now.strftime("%Y-%m-%d %H:%M:%S.%f")+"-Visualization")
+origin = repo.remote('origin')
+origin.push()
