@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 import csv
 import os.path
 from git import Repo
+import subprocess
 
 data_file = "/home/veit/Dokumente/OutdoorWeatherStation/SensorData.csv"
 
@@ -30,7 +31,7 @@ def cb_station_data(identifier, temperature, humidity, wind_speed, gust_speed, r
                     wind_direction, battery_low):
 
     now = datetime.now()
-    save_delta = timedelta(hours=6)
+    save_delta = timedelta(hours=4)
     with open("save_time.txt", 'r') as file:
         save_time = datetime.strptime(file.read(), "%Y-%m-%d %H:%M:%S.%f")
 
@@ -100,6 +101,7 @@ def cb_station_data(identifier, temperature, humidity, wind_speed, gust_speed, r
         origin.push()
         with open("save_time.txt", 'w') as file:
             file.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+        subprocess.run(["python", "/home/veit/Dokumente/OutdoorWeatherStation/DataVisualization.py"])
 
 # Callback function for sensor data callback
 def cb_sensor_data(identifier, temperature, humidity):
