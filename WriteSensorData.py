@@ -98,6 +98,7 @@ def cb_station_data(identifier, temperature, humidity, wind_speed, gust_speed, r
         repo.index.add(['SensorData.csv'])
         repo.index.commit(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
         origin = repo.remote('origin')
+        origin.pull()
         origin.push()
         with open("save_time.txt", 'w') as file:
             file.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
