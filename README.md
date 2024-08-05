@@ -1,5 +1,9 @@
 # OutdoorWeatherStation
 
+## August 2024
+<p align=center><img width="100%" src="Visualization/2024-08_THR.svg"></p>
+<p align=center><img width="100%" src="Visualization/2024-08_Wind.svg"></p>
+
 ## May 2024
 <p align=center><img width="100%" src="Visualization/2024-05_THR.svg"></p>
 <p align=center><img width="100%" src="Visualization/2024-05_Wind.svg"></p>
